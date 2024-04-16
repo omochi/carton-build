@@ -17,7 +17,7 @@ jobs:
       - name: checkout carton
         uses: actions/checkout@v4
         with:
-          repository: https://github.com/swiftwasm/carton
+          repository: swiftwasm/carton
           ref: ${{ inputs.carton_ref }}
           path: carton
       - name: build carton
