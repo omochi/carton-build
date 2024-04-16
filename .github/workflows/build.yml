@@ -6,6 +6,7 @@ on:
       carton_ref:
         required: true
         type: string
+        default: main
       release_tag:
         required: true
         type: string
