@@ -1,11 +1,11 @@
 name: build
 
 on:
-  push:
-    tags:
-      - '*'
   workflow_dispatch:
     inputs:
+      carton_ref:
+        required: true
+        type: string
       release_tag:
         required: true
         type: string
@@ -14,9 +14,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout carton
+        uses: actions/checkout@v4
+        with:
+          repository: https://github.com/swiftwasm/carton
+          ref: ${{ inputs.carton_ref }}
+          path: carton
+      - name: build carton
+        run: swift build -c release
+        working-directory: carton
+      - name: package
+        run: |
+          mkdir -p package/carton
+          cd carton/.build/release
+          cp CartonFrontend carton $GITHUB_WORKSPACE/package/carton
+          cd $GITHUB_WORKSPACE/package
+          tar -zcvf carton.tar.gz carton
       - uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ inputs.release_tag }}
-          artifacts: "hello.txt"
+          artifacts: "package/carton.tar.gz"
